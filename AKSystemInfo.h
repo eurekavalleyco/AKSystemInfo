@@ -27,4 +27,5 @@
 + (UIStatusBarStyle)statusBarStyle;
 + (void)setStatusBarStyle:(UIStatusBarStyle)style;
 + (void)setStatusBarStyle:(UIStatusBarStyle)style animated:(BOOL)animated;
++ (UIColor *)iOSBlue;
 @end

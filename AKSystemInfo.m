@@ -94,6 +94,13 @@
     [[UIApplication sharedApplication] setStatusBarStyle:style animated:animated];
 }
 
++ (UIColor *)iOSBlue
+{
+    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategory:nil message:nil];
+    
+    return [UIColor colorWithRed:0.0 green:122.0/255.0 blue:1.0 alpha:1.0];
+}
+
 #pragma mark - // DELEGATED METHODS //
 
 #pragma mark - // OVERWRITTEN METHODS //
