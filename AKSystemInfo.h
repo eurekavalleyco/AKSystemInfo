@@ -28,4 +28,5 @@
 + (void)setStatusBarStyle:(UIStatusBarStyle)style;
 + (void)setStatusBarStyle:(UIStatusBarStyle)style animated:(BOOL)animated;
 + (UIColor *)iOSBlue;
++ (BOOL)viewIsUsingAutoLayout:(UIView *)view;
 @end

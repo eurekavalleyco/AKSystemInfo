@@ -25,80 +25,85 @@
 
 + (float)iOSVersion
 {
-    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategory:nil message:nil];
+    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategory:@"System" message:nil];
     
     return [[[UIDevice currentDevice] systemVersion] floatValue];
 }
 
 + (CGSize)screenSize
 {
-    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategory:nil message:nil];
+    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategory:@"UI" message:nil];
     
     return [UIScreen mainScreen].bounds.size;
 }
 
 + (BOOL)isPortrait
 {
-    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategory:nil message:nil];
+    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategory:@"UI" message:nil];
     
-    BOOL isPortrait = NO;
     UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
-    if ((orientation == UIDeviceOrientationPortrait) || (orientation == UIDeviceOrientationPortraitUpsideDown)) isPortrait = YES;
-    return isPortrait;
+    if ((orientation == UIDeviceOrientationPortrait) || (orientation == UIDeviceOrientationPortraitUpsideDown)) return YES;
+    else return NO;
 }
 
 + (BOOL)isLandscape
 {
-    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategory:nil message:nil];
+    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategory:@"UI" message:nil];
     
-    BOOL isLandscape = NO;
     UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
-    if ((orientation == UIDeviceOrientationLandscapeLeft) || (orientation == UIDeviceOrientationLandscapeRight)) isLandscape = YES;
-    return isLandscape;
+    if ((orientation == UIDeviceOrientationLandscapeLeft) || (orientation == UIDeviceOrientationLandscapeRight)) return YES;
+    else return NO;
 }
 
 + (BOOL)isRetina
 {
-    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategory:nil message:nil];
+    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategory:@"UI" message:nil];
     
-    BOOL isRetina = NO;
-    if ([UIScreen mainScreen].scale > 1.0) isRetina = YES;
-    return isRetina;
+    if ([UIScreen mainScreen].scale > 1.0) return YES;
+    else return NO;
 }
 
 + (CGFloat)statusBarHeight
 {
-    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategory:nil message:nil];
+    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategory:@"UI" message:nil];
     
     return [UIApplication sharedApplication].statusBarFrame.size.height;
 }
 
 + (UIStatusBarStyle)statusBarStyle
 {
-    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategory:nil message:nil];
+    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategory:@"UI" message:nil];
     
     return [UIApplication sharedApplication].statusBarStyle;
 }
 
 + (void)setStatusBarStyle:(UIStatusBarStyle)style
 {
-    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeSetter customCategory:nil message:nil];
+    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeSetter customCategory:@"UI" message:nil];
     
     [[UIApplication sharedApplication] setStatusBarStyle:style];
 }
 
 + (void)setStatusBarStyle:(UIStatusBarStyle)style animated:(BOOL)animated
 {
-    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeSetter customCategory:nil message:nil];
+    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeSetter customCategory:@"UI" message:nil];
     
     [[UIApplication sharedApplication] setStatusBarStyle:style animated:animated];
 }
 
 + (UIColor *)iOSBlue
 {
-    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategory:nil message:nil];
+    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategory:@"UI" message:nil];
     
     return [UIColor colorWithRed:0.0 green:122.0/255.0 blue:1.0 alpha:1.0];
+}
+
++ (BOOL)viewIsUsingAutoLayout:(UIView *)view
+{
+    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategory:@"UI" message:nil];
+    
+    if (view.constraints.count) return YES;
+    else return NO;
 }
 
 #pragma mark - // DELEGATED METHODS //
