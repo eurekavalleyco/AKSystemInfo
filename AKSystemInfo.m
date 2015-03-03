@@ -102,6 +102,7 @@
 {
     [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategory:@"UI" message:nil];
     
+//    if (view.translatesAutoresizingMaskIntoConstraints) return YES;
     if (view.constraints.count) return YES;
     else return NO;
 }
