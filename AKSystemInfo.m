@@ -15,13 +15,18 @@
 
 #pragma mark - // DEFINITIONS (Private) //
 
+#define REACHABILITY_DOMAIN @"https://parse.com"
+
+@interface AKSystemInfo ()
+@end
+
 @implementation AKSystemInfo
 
 #pragma mark - // SETTERS AND GETTERS //
 
 #pragma mark - // INITS AND LOADS //
 
-#pragma mark - // PUBLIC METHODS //
+#pragma mark - // PUBLIC METHODS (iOS) //
 
 + (float)iOSVersion
 {
@@ -29,6 +34,8 @@
     
     return [[[UIDevice currentDevice] systemVersion] floatValue];
 }
+
+#pragma mark - // PUBLIC METHODS (Device) //
 
 + (CGSize)screenSize
 {
@@ -65,6 +72,8 @@
     if ([UIScreen mainScreen].scale > 1.0) isRetina = YES;
     return isRetina;
 }
+
+#pragma mark - // PUBLIC METHODS (User Interface) //
 
 + (CGFloat)statusBarHeight
 {

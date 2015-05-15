@@ -18,14 +18,24 @@
 #pragma mark - // DEFINITIONS (Public) //
 
 @interface AKSystemInfo : NSObject
+
+// IOS //
+
 + (float)iOSVersion;
+
+// DEVICE //
+
 + (CGSize)screenSize;
 + (BOOL)isPortrait;
 + (BOOL)isLandscape;
 + (BOOL)isRetina;
+
+// USER INTERFACE //
+
 + (CGFloat)statusBarHeight;
 + (UIStatusBarStyle)statusBarStyle;
 + (void)setStatusBarStyle:(UIStatusBarStyle)style;
 + (void)setStatusBarStyle:(UIStatusBarStyle)style animated:(BOOL)animated;
 + (UIColor *)iOSBlue;
+
 @end
