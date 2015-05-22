@@ -30,7 +30,7 @@
 
 + (float)iOSVersion
 {
-    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategory:nil message:nil];
+    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategories:nil message:nil];
     
     return [[[UIDevice currentDevice] systemVersion] floatValue];
 }
@@ -39,14 +39,14 @@
 
 + (CGSize)screenSize
 {
-    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategory:nil message:nil];
+    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategories:nil message:nil];
     
     return [UIScreen mainScreen].bounds.size;
 }
 
 + (BOOL)isPortrait
 {
-    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategory:nil message:nil];
+    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategories:nil message:nil];
     
     BOOL isPortrait = NO;
     UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
@@ -56,7 +56,7 @@
 
 + (BOOL)isLandscape
 {
-    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategory:nil message:nil];
+    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategories:nil message:nil];
     
     BOOL isLandscape = NO;
     UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
@@ -66,7 +66,7 @@
 
 + (BOOL)isRetina
 {
-    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategory:nil message:nil];
+    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategories:nil message:nil];
     
     BOOL isRetina = NO;
     if ([UIScreen mainScreen].scale > 1.0) isRetina = YES;
@@ -77,35 +77,35 @@
 
 + (CGFloat)statusBarHeight
 {
-    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategory:nil message:nil];
+    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategories:nil message:nil];
     
     return [UIApplication sharedApplication].statusBarFrame.size.height;
 }
 
 + (UIStatusBarStyle)statusBarStyle
 {
-    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategory:nil message:nil];
+    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategories:nil message:nil];
     
     return [UIApplication sharedApplication].statusBarStyle;
 }
 
 + (void)setStatusBarStyle:(UIStatusBarStyle)style
 {
-    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeSetter customCategory:nil message:nil];
+    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeSetter customCategories:nil message:nil];
     
     [[UIApplication sharedApplication] setStatusBarStyle:style];
 }
 
 + (void)setStatusBarStyle:(UIStatusBarStyle)style animated:(BOOL)animated
 {
-    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeSetter customCategory:nil message:nil];
+    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeSetter customCategories:nil message:nil];
     
     [[UIApplication sharedApplication] setStatusBarStyle:style animated:animated];
 }
 
 + (UIColor *)iOSBlue
 {
-    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategory:nil message:nil];
+    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategories:nil message:nil];
     
     return [UIColor colorWithRed:0.0 green:122.0/255.0 blue:1.0 alpha:1.0];
 }
