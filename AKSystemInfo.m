@@ -25,7 +25,7 @@
 
 + (float)iOSVersion
 {
-    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategory:@"System" message:nil];
+    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategories:nil message:nil];
     
     return [[[UIDevice currentDevice] systemVersion] floatValue];
 }
