@@ -18,18 +18,29 @@
 
 #pragma mark - // DEFINITIONS (Private) //
 
+#define USERDEFAULTS_KEY_WIFI_ENABLED @"wifiEnabled"
+#define USERDEFAULTS_KEY_WWAN_ENABLED @"wwanEnabled"
+
 @interface AKSystemInfo ()
 @property (nonatomic, strong) Reachability *reachability;
+@property (nonatomic) AKInternetStatus currentStatus;
+@property (nonatomic, strong) NSUserDefaults *userDefaults;
 + (id)sharedInfo;
 + (Reachability *)reachability;
++ (NSUserDefaults *)userDefaults;
 - (void)setup;
 - (void)teardown;
 - (void)internetStatusDidChange:(NSNotification *)notification;
++ (void)updateInternetStatus;
 @end
 
 @implementation AKSystemInfo
 
 #pragma mark - // SETTERS AND GETTERS //
+
+@synthesize reachability = _reachability;
+@synthesize currentStatus = _currentStatus;
+@synthesize userDefaults = _userDefaults;
 
 - (Reachability *)reachability
 {
@@ -40,6 +51,31 @@
     _reachability = [Reachability reachabilityWithHostName:[AKPrivateInfo reachabilityDomain]];
     [_reachability startNotifier];
     return _reachability;
+}
+
+- (void)setCurrentStatus:(AKInternetStatus)currentStatus
+{
+    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeSetter customCategories:nil message:nil];
+    
+    if (currentStatus == _currentStatus) return;
+    
+    NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
+    [userInfo setObject:[NSNumber numberWithInteger:currentStatus] forKey:NOTIFICATION_OBJECT_KEY];
+    [userInfo setObject:[NSNumber numberWithInteger:_currentStatus] forKey:NOTIFICATION_OLD_KEY];
+    
+    _currentStatus = currentStatus;
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_INTERNETSTATUS_DID_CHANGE object:nil userInfo:userInfo];
+}
+
+- (NSUserDefaults *)userDefaults
+{
+    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategories:nil message:nil];
+    
+    if (_userDefaults) return _userDefaults;
+    
+    _userDefaults = [NSUserDefaults standardUserDefaults];
+    return _userDefaults;
 }
 
 #pragma mark - // INITS AND LOADS //
@@ -54,6 +90,7 @@
         [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeCritical methodType:AKMethodTypeSetup customCategories:nil message:[NSString stringWithFormat:@"Could not initialize %@", stringFromVariable(self)]];
         return nil;
     }
+    
     [self setup];
     return self;
 }
@@ -73,14 +110,7 @@
     [self teardown];
 }
 
-#pragma mark - // PUBLIC METHODS //
-
-+ (float)iOSVersion
-{
-    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategories:nil message:nil];
-    
-    return [[[UIDevice currentDevice] systemVersion] floatValue];
-}
+#pragma mark - // PUBLIC METHODS (Hardware) //
 
 + (CGSize)screenSize
 {
@@ -113,6 +143,15 @@
     
     if ([UIScreen mainScreen].scale > 1.0) return YES;
     else return NO;
+}
+
+#pragma mark - // PUBLIC METHODS (Software) //
+
++ (float)iOSVersion
+{
+    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategories:nil message:nil];
+    
+    return [[[UIDevice currentDevice] systemVersion] floatValue];
 }
 
 + (CGFloat)statusBarHeight
@@ -154,14 +193,25 @@
 {
     [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategories:@[AKD_UI] message:nil];
     
-//    if (view.translatesAutoresizingMaskIntoConstraints) return YES;
+    //    if (view.translatesAutoresizingMaskIntoConstraints) return YES;
     if (view.constraints.count) return YES;
     else return NO;
+}
+
+#pragma mark - // PUBLIC METHODS (Internet) //
+
++ (AKInternetStatus)internetStatus
+{
+    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategories:@[AKD_UI] message:nil];
+    
+    return [[AKSystemInfo sharedInfo] currentStatus];
 }
 
 + (BOOL)isReachable
 {
     [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategories:nil message:nil];
+    
+    if (![AKSystemInfo wifiEnabled] && ![AKSystemInfo wwanEnabled]) return NO;
     
     return [[[AKSystemInfo sharedInfo] reachability] isReachable];
 }
@@ -170,6 +220,8 @@
 {
     [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategories:nil message:nil];
     
+    if (![AKSystemInfo wifiEnabled]) return NO;
+    
     return [[[AKSystemInfo sharedInfo] reachability] isReachableViaWiFi];
 }
 
@@ -177,7 +229,53 @@
 {
     [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategories:nil message:nil];
     
+    if (![AKSystemInfo wwanEnabled]) return NO;
+    
     return [[[AKSystemInfo sharedInfo] reachability] isReachableViaWWAN];
+}
+
++ (BOOL)wifiEnabled
+{
+    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategories:nil message:nil];
+    
+    NSUserDefaults *userDefaults = [AKSystemInfo userDefaults];
+    NSNumber *wifiEnabled = [userDefaults objectForKey:USERDEFAULTS_KEY_WIFI_ENABLED];
+    if (wifiEnabled) return wifiEnabled.boolValue;
+    
+    [AKSystemInfo setWiFiEnabled:YES];
+    return YES;
+}
+
++ (void)setWiFiEnabled:(BOOL)wifiEnabled
+{
+    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeSetter customCategories:nil message:nil];
+    
+    NSUserDefaults *userDefaults = [AKSystemInfo userDefaults];
+    [userDefaults setBool:wifiEnabled forKey:USERDEFAULTS_KEY_WIFI_ENABLED];
+    [userDefaults synchronize];
+    [AKSystemInfo updateInternetStatus];
+}
+
++ (BOOL)wwanEnabled
+{
+    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategories:nil message:nil];
+    
+    NSUserDefaults *userDefaults = [AKSystemInfo userDefaults];
+    NSNumber *wwanEnabled = [userDefaults objectForKey:USERDEFAULTS_KEY_WWAN_ENABLED];
+    if (wwanEnabled) return wwanEnabled.boolValue;
+    
+    [AKSystemInfo setWWANEnabled:YES];
+    return YES;
+}
+
++ (void)setWWANEnabled:(BOOL)wwanEnabled
+{
+    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeSetter customCategories:nil message:nil];
+    
+    NSUserDefaults *userDefaults = [AKSystemInfo userDefaults];
+    [userDefaults setBool:wwanEnabled forKey:USERDEFAULTS_KEY_WWAN_ENABLED];
+    [userDefaults synchronize];
+    [AKSystemInfo updateInternetStatus];
 }
 
 #pragma mark - // DELEGATED METHODS //
@@ -205,6 +303,13 @@
     return [[AKSystemInfo sharedInfo] reachability];
 }
 
++ (NSUserDefaults *)userDefaults
+{
+    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategories:nil message:nil];
+    
+    return [[AKSystemInfo sharedInfo] userDefaults];
+}
+
 - (void)setup
 {
     [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeSetup customCategories:nil message:nil];
@@ -223,20 +328,16 @@
 {
     [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeUnspecified customCategories:@[AKD_NOTIFICATION_CENTER] message:nil];
     
-    if (![AKSystemInfo isReachable])
-    {
-        [[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_INTERNETSTATUS_DID_CHANGE object:nil userInfo:[NSDictionary dictionaryWithObject:[NSNumber numberWithInteger:AKDisconnected] forKey:NOTIFICATION_OBJECT_KEY]];
-        return;
-    }
+    [AKSystemInfo updateInternetStatus];
+}
+
++ (void)updateInternetStatus
+{
+    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeUnspecified customCategories:@[AKD_NOTIFICATION_CENTER] message:nil];
     
-    if ([AKSystemInfo isReachableViaWiFi])
-    {
-        [[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_INTERNETSTATUS_DID_CHANGE object:nil userInfo:[NSDictionary dictionaryWithObject:[NSNumber numberWithInteger:AKConnectedViaWiFi] forKey:NOTIFICATION_OBJECT_KEY]];
-    }
-    if ([AKSystemInfo isReachableViaWWAN])
-    {
-        [[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_INTERNETSTATUS_DID_CHANGE object:nil userInfo:[NSDictionary dictionaryWithObject:[NSNumber numberWithInteger:AKConnectedViaWWAN] forKey:NOTIFICATION_OBJECT_KEY]];
-    }
+    if ([AKSystemInfo isReachableViaWiFi]) [[AKSystemInfo sharedInfo] setCurrentStatus:AKConnectedViaWiFi];
+    else if ([AKSystemInfo isReachableViaWWAN]) [[AKSystemInfo sharedInfo] setCurrentStatus:AKConnectedViaWWAN];
+    else [[AKSystemInfo sharedInfo] setCurrentStatus:AKDisconnected];
 }
 
 @end

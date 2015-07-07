@@ -17,27 +17,42 @@
 
 #pragma mark - // DEFINITIONS (Public) //
 
-#define NOTIFICATION_INTERNETSTATUS_DID_CHANGE @"kNotificationInternetStatusDidChange"
-
 typedef enum {
     AKDisconnected = 0,
-    AKConnectedViaWWAN,
-    AKConnectedViaWiFi
+    AKConnectedViaWWAN = 1,
+    AKConnectedViaWiFi = 2
 } AKInternetStatus;
 
+#define NOTIFICATION_INTERNETSTATUS_DID_CHANGE @"kNotificationInternetStatusDidChange"
+
 @interface AKSystemInfo : NSObject
-+ (float)iOSVersion;
+
+// HARDWARE //
+
 + (CGSize)screenSize;
 + (BOOL)isPortrait;
 + (BOOL)isLandscape;
 + (BOOL)isRetina;
+
+// SOFTWARE //
+
++ (float)iOSVersion;
 + (CGFloat)statusBarHeight;
 + (UIStatusBarStyle)statusBarStyle;
 + (void)setStatusBarStyle:(UIStatusBarStyle)style;
 + (void)setStatusBarStyle:(UIStatusBarStyle)style animated:(BOOL)animated;
 + (UIColor *)iOSBlue;
 + (BOOL)viewIsUsingAutoLayout:(UIView *)view;
+
+// INTERNET //
+
++ (AKInternetStatus)internetStatus;
 + (BOOL)isReachable;
 + (BOOL)isReachableViaWiFi;
 + (BOOL)isReachableViaWWAN;
++ (BOOL)wifiEnabled;
++ (void)setWiFiEnabled:(BOOL)wifiEnabled;
++ (BOOL)wwanEnabled;
++ (void)setWWANEnabled:(BOOL)wwanEnabled;
+
 @end
