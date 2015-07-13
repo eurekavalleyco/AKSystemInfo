@@ -157,6 +157,8 @@
     return [[[UIDevice currentDevice] systemVersion] floatValue];
 }
 
+#pragma mark - // PUBLIC METHODS (User Interface) //
+
 + (CGFloat)statusBarHeight
 {
     [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategories:@[AKD_UI] message:nil];
