@@ -216,23 +216,7 @@
 {
     [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategories:nil message:nil];
     
-    if (![AKSystemInfo wifiEnabled] && ![AKSystemInfo wwanEnabled]) return NO;
-    
-    int attempt = 0;
-    BOOL isReachable;
-    NSDate *startDate = [NSDate date];
-    do {
-        isReachable = [[[AKSystemInfo sharedInfo] reachability] isReachable];
-    } while (!isReachable && (!INTERNET_MAX_ATTEMPTS_COUNT || (++attempt < INTERNET_MAX_ATTEMPTS_COUNT)) && (!INTERENT_MAX_ATTEMPTS_TIME || ([[NSDate date] timeIntervalSinceDate:startDate] < INTERENT_MAX_ATTEMPTS_TIME)));
-    if (isReachable)
-    {
-        [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeInfo methodType:AKMethodTypeGetter customCategories:nil message:[NSString stringWithFormat:@"Found Internet connection after %i attempts.", ++attempt]];
-    }
-    else
-    {
-        [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeNotice methodType:AKMethodTypeGetter customCategories:nil message:[NSString stringWithFormat:@"No Internet connection detected after %i attempts.", ++attempt]];
-    }
-    return isReachable;
+    return ([AKSystemInfo isReachableViaWiFi] || [AKSystemInfo isReachableViaWWAN]);
 }
 
 + (BOOL)isReachableViaWiFi
