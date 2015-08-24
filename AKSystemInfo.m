@@ -22,7 +22,7 @@
 #define USERDEFAULTS_KEY_WWAN_ENABLED @"wwanEnabled"
 
 #define INTERNET_MAX_ATTEMPTS_COUNT 0
-#define INTERENT_MAX_ATTEMPTS_TIME 1.0
+#define INTERNET_MAX_ATTEMPTS_TIME 1.0
 
 @interface AKSystemInfo ()
 @property (nonatomic, strong) Reachability *reachability;
@@ -230,7 +230,7 @@
     NSDate *startDate = [NSDate date];
     do {
         isReachable = [[[AKSystemInfo sharedInfo] reachability] isReachableViaWiFi];
-    } while (!isReachable && (!INTERNET_MAX_ATTEMPTS_COUNT || (++attempt < INTERNET_MAX_ATTEMPTS_COUNT)) && (!INTERENT_MAX_ATTEMPTS_TIME || ([[NSDate date] timeIntervalSinceDate:startDate] < INTERENT_MAX_ATTEMPTS_TIME)));
+    } while (!isReachable && (!INTERNET_MAX_ATTEMPTS_COUNT || (++attempt < INTERNET_MAX_ATTEMPTS_COUNT)) && (!INTERNET_MAX_ATTEMPTS_TIME || ([[NSDate date] timeIntervalSinceDate:startDate] < INTERNET_MAX_ATTEMPTS_TIME)));
     if (isReachable)
     {
         [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeInfo methodType:AKMethodTypeGetter customCategories:nil message:[NSString stringWithFormat:@"Found Internet connection after %i attempts.", ++attempt]];
@@ -253,7 +253,7 @@
     NSDate *startDate = [NSDate date];
     do {
         isReachable = [[[AKSystemInfo sharedInfo] reachability] isReachableViaWWAN];
-    } while (!isReachable && (!INTERNET_MAX_ATTEMPTS_COUNT || (++attempt < INTERNET_MAX_ATTEMPTS_COUNT)) && (!INTERENT_MAX_ATTEMPTS_TIME || ([[NSDate date] timeIntervalSinceDate:startDate] < INTERENT_MAX_ATTEMPTS_TIME)));
+    } while (!isReachable && (!INTERNET_MAX_ATTEMPTS_COUNT || (++attempt < INTERNET_MAX_ATTEMPTS_COUNT)) && (!INTERNET_MAX_ATTEMPTS_TIME || ([[NSDate date] timeIntervalSinceDate:startDate] < INTERNET_MAX_ATTEMPTS_TIME)));
     if (isReachable)
     {
         [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeInfo methodType:AKMethodTypeGetter customCategories:nil message:[NSString stringWithFormat:@"Found Internet connection after %i attempts.", ++attempt]];
