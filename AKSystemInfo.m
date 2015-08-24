@@ -28,13 +28,23 @@
 @property (nonatomic, strong) Reachability *reachability;
 @property (nonatomic) AKInternetStatus currentStatus;
 @property (nonatomic, strong) NSUserDefaults *userDefaults;
+
+// GENERAL //
+
+- (void)setup;
+- (void)teardown;
+
+// CONVENIENCE //
+
 + (id)sharedInfo;
 + (Reachability *)reachability;
 + (NSUserDefaults *)userDefaults;
-- (void)setup;
-- (void)teardown;
+
+// RESPONDERS //
+
 - (void)internetStatusDidChange:(NSNotification *)notification;
 + (void)updateInternetStatus;
+
 @end
 
 @implementation AKSystemInfo
@@ -313,7 +323,23 @@
 
 #pragma mark - // OVERWRITTEN METHODS //
 
-#pragma mark - // PRIVATE METHODS //
+#pragma mark - // PRIVATE METHODS (General) //
+
+- (void)setup
+{
+    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeSetup customCategories:nil message:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(internetStatusDidChange:) name:kReachabilityChangedNotification object:self.reachability];
+}
+
+- (void)teardown
+{
+    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeSetup customCategories:nil message:nil];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kReachabilityChangedNotification object:self.reachability];
+}
+
+#pragma mark - // PRIVATE METHODS (Convenience) //
 
 + (id)sharedInfo
 {
@@ -341,19 +367,7 @@
     return [[AKSystemInfo sharedInfo] userDefaults];
 }
 
-- (void)setup
-{
-    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeSetup customCategories:nil message:nil];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(internetStatusDidChange:) name:kReachabilityChangedNotification object:self.reachability];
-}
-
-- (void)teardown
-{
-    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeSetup customCategories:nil message:nil];
-    
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kReachabilityChangedNotification object:self.reachability];
-}
+#pragma mark - // PRIVATE METHODS (Responders) //
 
 - (void)internetStatusDidChange:(NSNotification *)notification
 {
