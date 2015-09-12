@@ -18,6 +18,8 @@
 
 #pragma mark - // DEFINITIONS (Private) //
 
+#define SEGUE_DURATION 0.18
+
 #define USERDEFAULTS_KEY_WIFI_ENABLED @"wifiEnabled"
 #define USERDEFAULTS_KEY_WWAN_ENABLED @"wwanEnabled"
 
@@ -167,8 +169,6 @@
     return [[[UIDevice currentDevice] systemVersion] floatValue];
 }
 
-#pragma mark - // PUBLIC METHODS (User Interface) //
-
 + (CGFloat)statusBarHeight
 {
     [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategories:@[AKD_UI] message:nil];
@@ -197,6 +197,13 @@
     [[UIApplication sharedApplication] setStatusBarStyle:style animated:animated];
 }
 
++ (void)setStatusBarHidden:(BOOL)hidden withAnimation:(UIStatusBarAnimation)animation
+{
+    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeSetter customCategories:@[AKD_UI] message:nil];
+    
+    [[UIApplication sharedApplication] setStatusBarHidden:hidden withAnimation:animation];
+}
+
 + (UIColor *)iOSBlue
 {
     [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategories:@[AKD_UI] message:nil];
@@ -208,7 +215,7 @@
 {
     [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategories:@[AKD_UI] message:nil];
     
-    //    if (view.translatesAutoresizingMaskIntoConstraints) return YES;
+//    if (view.translatesAutoresizingMaskIntoConstraints) return YES;
     if (view.constraints.count) return YES;
     else return NO;
 }

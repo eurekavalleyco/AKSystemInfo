@@ -41,6 +41,7 @@ typedef enum {
 + (UIStatusBarStyle)statusBarStyle;
 + (void)setStatusBarStyle:(UIStatusBarStyle)style;
 + (void)setStatusBarStyle:(UIStatusBarStyle)style animated:(BOOL)animated;
++ (void)setStatusBarHidden:(BOOL)hidden withAnimation:(UIStatusBarAnimation)animation;
 + (UIColor *)iOSBlue;
 + (BOOL)viewIsUsingAutoLayout:(UIView *)view;
 
