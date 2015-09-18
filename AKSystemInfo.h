@@ -12,6 +12,7 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+@import AssetsLibrary;
 
 #pragma mark - // PROTOCOLS //
 
@@ -55,5 +56,10 @@ typedef enum {
 + (void)setWiFiEnabled:(BOOL)wifiEnabled;
 + (BOOL)wwanEnabled;
 + (void)setWWANEnabled:(BOOL)wwanEnabled;
+
+// DATA //
+
++ (void)getLastPhotoThumbnailFromCameraRollWithCompletion:(void (^)(UIImage *))completion;
++ (ALAssetsLibrary *)assetsLibrary;
 
 @end

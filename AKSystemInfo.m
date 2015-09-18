@@ -15,6 +15,7 @@
 #import "AKGenerics.h"
 #import "Reachability.h"
 #import "AKPrivateInfo.h"
+@import Photos;
 
 #pragma mark - // DEFINITIONS (Private) //
 
@@ -26,19 +27,22 @@
 #define INTERNET_MAX_ATTEMPTS_COUNT 0
 #define INTERNET_MAX_ATTEMPTS_TIME 1.0
 
+#define THUMBNAIL_SIZE CGSizeMake(157.0, 157.0)
+
 @interface AKSystemInfo ()
 @property (nonatomic, strong) Reachability *reachability;
 @property (nonatomic) AKInternetStatus currentStatus;
 @property (nonatomic, strong) NSUserDefaults *userDefaults;
+@property (nonatomic, strong) ALAssetsLibrary *sharedLibrary;
 
 // GENERAL //
 
++ (id)sharedInfo;
 - (void)setup;
 - (void)teardown;
 
 // CONVENIENCE //
 
-+ (id)sharedInfo;
 + (Reachability *)reachability;
 + (NSUserDefaults *)userDefaults;
 
@@ -56,6 +60,7 @@
 @synthesize reachability = _reachability;
 @synthesize currentStatus = _currentStatus;
 @synthesize userDefaults = _userDefaults;
+@synthesize sharedLibrary = _sharedLibrary;
 
 - (Reachability *)reachability
 {
@@ -91,6 +96,16 @@
     
     _userDefaults = [NSUserDefaults standardUserDefaults];
     return _userDefaults;
+}
+
+- (ALAssetsLibrary *)sharedLibrary
+{
+    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategories:@[AKD_DATA] message:nil];
+    
+    if (_sharedLibrary) return _sharedLibrary;
+    
+    _sharedLibrary = [ALAssetsLibrary new];
+    return _sharedLibrary;
 }
 
 #pragma mark - // INITS AND LOADS //
@@ -326,11 +341,73 @@
     [AKSystemInfo updateInternetStatus];
 }
 
+#pragma mark - // PUBLIC METHODS (Data) //
+
++ (void)getLastPhotoThumbnailFromCameraRollWithCompletion:(void (^)(UIImage *))completion
+{
+    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategories:@[AKD_DATA] message:nil];
+    
+    if ([AKSystemInfo iOSVersion] < 9.0)
+    {
+        [[AKSystemInfo assetsLibrary] enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos usingBlock:^(ALAssetsGroup *group, BOOL *stop){
+            NSInteger numberOfAssets = [group numberOfAssets];
+            if (numberOfAssets > 0) {
+                NSInteger lastIndex = numberOfAssets-1;
+                [group enumerateAssetsAtIndexes:[NSIndexSet indexSetWithIndex:lastIndex] options:0 usingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop){
+                    UIImage *thumbnail = [UIImage imageWithCGImage:[result thumbnail]];
+                    if (thumbnail && thumbnail.size.width > 0)
+                    {
+                        *stop = YES;
+                        completion(thumbnail);
+                    }
+                }];
+            }
+        } failureBlock:^(NSError *error){
+            [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeError methodType:AKMethodTypeGetter customCategories:@[AKD_DATA] message:[NSString stringWithFormat:@"%@, %@", error, error.userInfo]];
+        }];
+    }
+    else
+    {
+        PHFetchOptions *fetchOptions = [[PHFetchOptions alloc] init];
+        fetchOptions.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:YES]];
+        PHFetchResult *fetchResult = [PHAsset fetchAssetsWithMediaType:PHAssetMediaTypeImage options:fetchOptions];
+        PHAsset *lastAsset = [fetchResult lastObject];
+        PHImageRequestOptions *options = PHImageRequestOptionsVersionCurrent;
+        [options setSynchronous:YES];
+        [[PHImageManager defaultManager] requestImageForAsset:lastAsset
+                                                   targetSize:THUMBNAIL_SIZE
+                                                  contentMode:PHImageContentModeAspectFill
+                                                      options:options
+                                                resultHandler:^(UIImage *result, NSDictionary *info){
+                                                    completion(result);
+                                                }];
+    }
+}
+
++ (ALAssetsLibrary *)assetsLibrary
+{
+    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategories:@[AKD_DATA] message:nil];
+    
+    return [[AKSystemInfo sharedInfo] sharedLibrary];
+}
+
 #pragma mark - // DELEGATED METHODS //
 
 #pragma mark - // OVERWRITTEN METHODS //
 
 #pragma mark - // PRIVATE METHODS (General) //
+
++ (id)sharedInfo
+{
+    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeSetup customCategories:nil message:nil];
+    
+    static AKSystemInfo *sharedInfo = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        sharedInfo = [[AKSystemInfo alloc] init];
+    });
+    return sharedInfo;
+}
 
 - (void)setup
 {
@@ -347,18 +424,6 @@
 }
 
 #pragma mark - // PRIVATE METHODS (Convenience) //
-
-+ (id)sharedInfo
-{
-    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeSetup customCategories:nil message:nil];
-    
-    static AKSystemInfo *sharedInfo = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        sharedInfo = [[AKSystemInfo alloc] init];
-    });
-    return sharedInfo;
-}
 
 + (Reachability *)reachability
 {
