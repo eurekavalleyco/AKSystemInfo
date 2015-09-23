@@ -25,6 +25,7 @@ typedef enum {
 } AKInternetStatus;
 
 #define NOTIFICATION_INTERNETSTATUS_DID_CHANGE @"kNotificationInternetStatusDidChange"
+#define NOTIFICATION_ASSETSLIBRARY_DID_CHANGE @"kNotificationAssetsLibraryDidChange"
 
 @interface AKSystemInfo : NSObject
 

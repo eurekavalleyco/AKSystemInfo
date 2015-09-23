@@ -49,6 +49,10 @@
 // RESPONDERS //
 
 - (void)internetStatusDidChange:(NSNotification *)notification;
+- (void)assetsLibraryDidChange:(NSNotification *)notification;
+
+// HELPER //
+
 + (void)updateInternetStatus;
 
 @end
@@ -96,6 +100,22 @@
     
     _userDefaults = [NSUserDefaults standardUserDefaults];
     return _userDefaults;
+}
+
+- (void)setSharedLibrary:(ALAssetsLibrary *)sharedLibrary
+{
+    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeSetter customCategories:@[AKD_DATA] message:nil];
+    
+    if ([AKGenerics object:sharedLibrary isEqualToObject:_sharedLibrary]) return;
+    
+    NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
+    if (_sharedLibrary) [userInfo setObject:_sharedLibrary forKey:NOTIFICATION_OLD_KEY];
+    
+    _sharedLibrary = sharedLibrary;
+    
+    if (sharedLibrary) [userInfo setObject:sharedLibrary forKey:NOTIFICATION_OBJECT_KEY];
+    
+    [AKGenerics postNotificationName:NOTIFICATION_ASSETSLIBRARY_DID_CHANGE object:nil userInfo:userInfo];
 }
 
 - (ALAssetsLibrary *)sharedLibrary
@@ -349,16 +369,30 @@
     
     if ([AKSystemInfo iOSVersion] < 9.0)
     {
-        [[AKSystemInfo assetsLibrary] enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos usingBlock:^(ALAssetsGroup *group, BOOL *stop){
+        __block BOOL foundThumbnail = NO;
+        [[AKSystemInfo assetsLibrary] enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
+            if (!group)
+            {
+                *stop = YES;
+                if (!foundThumbnail)
+                {
+                    completion(nil);
+                }
+                return;
+            }
+            
             NSInteger numberOfAssets = [group numberOfAssets];
-            if (numberOfAssets > 0) {
+            if (numberOfAssets)
+            {
                 NSInteger lastIndex = numberOfAssets-1;
-                [group enumerateAssetsAtIndexes:[NSIndexSet indexSetWithIndex:lastIndex] options:0 usingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop){
+                [group enumerateAssetsAtIndexes:[NSIndexSet indexSetWithIndex:lastIndex] options:0 usingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop) {
                     UIImage *thumbnail = [UIImage imageWithCGImage:[result thumbnail]];
                     if (thumbnail && thumbnail.size.width > 0)
                     {
                         *stop = YES;
+                        foundThumbnail = YES;
                         completion(thumbnail);
+                        return;
                     }
                 }];
             }
@@ -414,6 +448,7 @@
     [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeSetup customCategories:nil message:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(internetStatusDidChange:) name:kReachabilityChangedNotification object:self.reachability];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(assetsLibraryDidChange:) name:ALAssetsLibraryChangedNotification object:nil];
 }
 
 - (void)teardown
@@ -421,6 +456,7 @@
     [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeSetup customCategories:nil message:nil];
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kReachabilityChangedNotification object:self.reachability];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:ALAssetsLibraryChangedNotification object:nil];
 }
 
 #pragma mark - // PRIVATE METHODS (Convenience) //
@@ -447,6 +483,15 @@
     
     [AKSystemInfo updateInternetStatus];
 }
+
+- (void)assetsLibraryDidChange:(NSNotification *)notification
+{
+    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeUnspecified customCategories:@[AKD_NOTIFICATION_CENTER] message:nil];
+    
+    [[AKSystemInfo sharedInfo] setSharedLibrary:[ALAssetsLibrary new]];
+}
+
+#pragma mark - // PRIVATE METHODS (Helper) //
 
 + (void)updateInternetStatus
 {
