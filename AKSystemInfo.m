@@ -433,7 +433,7 @@
 
 + (id)sharedInfo
 {
-    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeSetup customCategories:nil message:nil];
+    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategories:nil message:nil];
     
     static AKSystemInfo *sharedInfo = nil;
     static dispatch_once_t onceToken;
