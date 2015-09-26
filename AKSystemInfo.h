@@ -12,7 +12,6 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-@import AssetsLibrary;
 
 #pragma mark - // PROTOCOLS //
 
@@ -25,7 +24,6 @@ typedef enum {
 } AKInternetStatus;
 
 #define NOTIFICATION_INTERNETSTATUS_DID_CHANGE @"kNotificationInternetStatusDidChange"
-#define NOTIFICATION_ASSETSLIBRARY_DID_CHANGE @"kNotificationAssetsLibraryDidChange"
 
 @interface AKSystemInfo : NSObject
 
@@ -57,10 +55,5 @@ typedef enum {
 + (void)setWiFiEnabled:(BOOL)wifiEnabled;
 + (BOOL)wwanEnabled;
 + (void)setWWANEnabled:(BOOL)wwanEnabled;
-
-// DATA //
-
-+ (void)getLastPhotoThumbnailFromCameraRollWithCompletion:(void (^)(UIImage *))completion;
-+ (ALAssetsLibrary *)assetsLibrary;
 
 @end
