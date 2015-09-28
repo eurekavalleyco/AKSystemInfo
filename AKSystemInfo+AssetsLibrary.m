@@ -29,16 +29,10 @@
 {
     [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeSetter customCategories:@[AKD_UI] message:nil];
     
-    ALAssetsLibrary *oldLibrary = self.sharedLibrary;
-    if ([AKGenerics object:sharedLibrary isEqualToObject:oldLibrary]) return;
-    
-    NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
-    if (oldLibrary) [userInfo setObject:oldLibrary forKey:NOTIFICATION_OLD_KEY];
-    
     objc_setAssociatedObject(self, @selector(sharedLibrary), sharedLibrary, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     
+    NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
     if (sharedLibrary) [userInfo setObject:sharedLibrary forKey:NOTIFICATION_OBJECT_KEY];
-    
     [AKGenerics postNotificationName:NOTIFICATION_ASSETSLIBRARY_DID_CHANGE object:nil userInfo:userInfo];
 }
 
