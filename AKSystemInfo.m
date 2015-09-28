@@ -65,7 +65,7 @@
     
     if (_reachability) return _reachability;
     
-    _reachability = [Reachability reachabilityWithHostName:[AKPrivateInfo reachabilityDomain]];
+    _reachability = [Reachability reachabilityWithHostname:[AKPrivateInfo reachabilityDomain]];
     [_reachability startNotifier];
     return _reachability;
 }
