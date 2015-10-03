@@ -14,7 +14,7 @@
 #import "AKDebugger.h"
 #import "AKGenerics.h"
 #import "Reachability.h"
-#import "AKPrivateInfo.h"
+#import "PrivateInfo.h"
 
 #pragma mark - // DEFINITIONS (Private) //
 
@@ -65,7 +65,7 @@
     
     if (_reachability) return _reachability;
     
-    _reachability = [Reachability reachabilityWithHostname:[AKPrivateInfo reachabilityDomain]];
+    _reachability = [Reachability reachabilityWithHostname:[PrivateInfo reachabilityDomain]];
     [_reachability startNotifier];
     return _reachability;
 }
