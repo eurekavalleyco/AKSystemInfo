@@ -24,8 +24,14 @@ typedef enum {
 } AKInternetStatus;
 
 #define NOTIFICATION_INTERNETSTATUS_DID_CHANGE @"kNotificationInternetStatusDidChange"
+#define NOTIFICATION_PUBLIC_IPADDRESS_DID_CHANGE @"kNotificationPublicIPAddressDidChange"
+#define NOTIFICATION_PRIVATE_IPADDRESS_DID_CHANGE @"kNotificationPrivateIPAddressDidChange"
 
 @interface AKSystemInfo : NSObject
+
+// GENERAL //
+
++ (NSUUID *)deviceId;
 
 // HARDWARE //
 
@@ -36,6 +42,8 @@ typedef enum {
 
 // SOFTWARE //
 
++ (NSString *)bundleIdentifier;
++ (NSString *)appName;
 + (float)iOSVersion;
 + (CGFloat)statusBarHeight;
 + (UIStatusBarStyle)statusBarStyle;
@@ -55,5 +63,8 @@ typedef enum {
 + (void)setWiFiEnabled:(BOOL)wifiEnabled;
 + (BOOL)wwanEnabled;
 + (void)setWWANEnabled:(BOOL)wwanEnabled;
++ (NSString *)publicIpAddress;
++ (NSString *)privateIpAddress;
++ (void)refreshInternetStatus;
 
 @end
