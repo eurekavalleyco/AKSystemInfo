@@ -14,7 +14,6 @@
 #import "AKDebugger.h"
 #import "AKGenerics.h"
 #import "Reachability.h"
-#import "PrivateInfo.h"
 #include <ifaddrs.h>
 #include <arpa/inet.h>
 
@@ -32,6 +31,7 @@
 #define INTERNET_MAX_ATTEMPTS_TIME 1.0f
 
 @interface AKSystemInfo () <NSURLConnectionDelegate, NSURLConnectionDataDelegate>
+@property (nonatomic) Class classForPrivateInfo;
 @property (nonatomic, strong) Reachability *reachability;
 @property (nonatomic) AKInternetStatus currentStatus;
 @property (nonatomic, strong) NSString *publicIpAddress;
@@ -65,6 +65,7 @@
 
 #pragma mark - // SETTERS AND GETTERS //
 
+@synthesize classForPrivateInfo = _classForPrivateInfo;
 @synthesize reachability = _reachability;
 @synthesize currentStatus = _currentStatus;
 @synthesize publicIpAddress = _publicIpAddress;
@@ -72,14 +73,33 @@
 @synthesize privateIpAddress = _privateIpAddress;
 @synthesize userDefaults = _userDefaults;
 
+- (void)setClassForPrivateInfo:(Class <PrivateInfo>)classForPrivateInfo
+{
+    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeSetter customCategories:nil message:nil];
+    
+    _classForPrivateInfo = classForPrivateInfo;
+    [self setReachability:[Reachability reachabilityWithHostname:[classForPrivateInfo reachabilityDomain]]];
+}
+
+- (void)setReachability:(Reachability *)reachability
+{
+    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeSetter customCategories:nil message:nil];
+    
+    if ([AKGenerics object:reachability isEqualToObject:_reachability]) return;
+    
+    _reachability = reachability;
+    [_reachability startNotifier];
+}
+
 - (Reachability *)reachability
 {
     [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategories:nil message:nil];
     
     if (_reachability) return _reachability;
     
-    _reachability = [Reachability reachabilityWithHostname:[PrivateInfo reachabilityDomain]];
-    [_reachability startNotifier];
+    if (!self.classForPrivateInfo) return nil;
+    
+    [self setReachability:[Reachability reachabilityWithHostname:[self.classForPrivateInfo reachabilityDomain]]];
     return _reachability;
 }
 
@@ -168,6 +188,20 @@
     [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeSetup customCategories:nil message:nil];
     
     [self teardown];
+}
+
+#pragma mark - // PUBLIC METHODS (Setup) //
+
++ (void)setupWithPrivateInfo:(Class)classForPrivateInfo
+{
+    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeSetup customCategories:nil message:nil];
+    
+    if (!classForPrivateInfo)
+    {
+        [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeWarning methodType:AKMethodTypeSetup customCategories:nil message:[NSString stringWithFormat:@"%@ is nil", stringFromVariable(classForPrivateInfo)]];
+    }
+    
+    [[AKSystemInfo sharedInfo] setClassForPrivateInfo:classForPrivateInfo];
 }
 
 #pragma mark - // PUBLIC METHODS (General) //

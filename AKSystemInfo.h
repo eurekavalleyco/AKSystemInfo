@@ -15,6 +15,10 @@
 
 #pragma mark - // PROTOCOLS //
 
+@protocol PrivateInfo <NSObject>
++ (NSString *)reachabilityDomain;
+@end
+
 #pragma mark - // DEFINITIONS (Public) //
 
 typedef enum {
@@ -28,6 +32,10 @@ typedef enum {
 #define NOTIFICATION_PRIVATE_IPADDRESS_DID_CHANGE @"kNotificationPrivateIPAddressDidChange"
 
 @interface AKSystemInfo : NSObject
+
+// SETUP //
+
++ (void)setupWithPrivateInfo:(Class <PrivateInfo>)classForPrivateInfo;
 
 // GENERAL //
 
