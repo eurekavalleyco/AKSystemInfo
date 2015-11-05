@@ -1,4 +1,4 @@
-AKSystemInfo
+SystemInfo
 ============
 
 Provides generic iOS methods
