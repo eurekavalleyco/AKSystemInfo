@@ -1,6 +1,6 @@
 //
-//  AKSystemInfo+AssetsLibrary.m
-//  AKSystemInfo
+//  SystemInfo+AssetsLibrary.m
+//  SystemInfo
 //
 //  Created by Ken M. Haggerty on 9/25/15.
 //  Copyright (c) 2015 MCMDI. All rights reserved.
@@ -10,8 +10,8 @@
 
 #pragma mark - // IMPORTS (Private) //
 
-#import "AKSystemInfo+AssetsLibrary.h"
-#import "AKSystemInfo+PRIVATE.h"
+#import "SystemInfo+AssetsLibrary.h"
+#import "SystemInfo+PRIVATE.h"
 #import "AKDebugger.h"
 #import "AKGenerics.h"
 #import <objc/runtime.h>
@@ -21,7 +21,7 @@
 
 #define THUMBNAIL_SIZE CGSizeMake(157.0, 157.0)
 
-@implementation AKSystemInfo (AssetsLibrary)
+@implementation SystemInfo (AssetsLibrary)
 
 #pragma mark - // SETTERS AND GETTERS //
 
@@ -57,17 +57,17 @@
 {
     [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategories:@[AKD_DATA] message:nil];
     
-    return [[AKSystemInfo sharedInfo] sharedLibrary];
+    return [[SystemInfo sharedInfo] sharedLibrary];
 }
 
 + (void)getLastPhotoThumbnailFromCameraRollWithCompletion:(void (^)(UIImage *))completion
 {
     [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategories:@[AKD_DATA] message:nil];
     
-    if ([AKSystemInfo iOSVersion] < 9.0)
+    if ([SystemInfo iOSVersion] < 9.0)
     {
         __block BOOL foundThumbnail = NO;
-        [[AKSystemInfo assetsLibrary] enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
+        [[SystemInfo assetsLibrary] enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
             if (!group)
             {
                 *stop = YES;
@@ -141,7 +141,7 @@
 {
     [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeUnspecified customCategories:@[AKD_NOTIFICATION_CENTER] message:nil];
     
-    [[AKSystemInfo sharedInfo] setSharedLibrary:[ALAssetsLibrary new]];
+    [[SystemInfo sharedInfo] setSharedLibrary:[ALAssetsLibrary new]];
 }
 
 @end

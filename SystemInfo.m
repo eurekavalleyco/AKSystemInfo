@@ -1,6 +1,6 @@
 //
-//  AKSystemInfo.m
-//  AKSystemInfo
+//  SystemInfo.m
+//  SystemInfo
 //
 //  Created by Ken M. Haggerty on 11/11/13.
 //  Copyright (c) 2013 Eureka Valley Co. All rights reserved.
@@ -10,7 +10,7 @@
 
 #pragma mark - // IMPORTS (Private) //
 
-#import "AKSystemInfo+PRIVATE.h"
+#import "SystemInfo+PRIVATE.h"
 #import "AKDebugger.h"
 #import "AKGenerics.h"
 #import "Reachability.h"
@@ -30,7 +30,7 @@
 #define INTERNET_MAX_ATTEMPTS_COUNT 2
 #define INTERNET_MAX_ATTEMPTS_TIME 1.0f
 
-@interface AKSystemInfo () <NSURLConnectionDelegate, NSURLConnectionDataDelegate>
+@interface SystemInfo () <NSURLConnectionDelegate, NSURLConnectionDataDelegate>
 @property (nonatomic) Class classForPrivateInfo;
 @property (nonatomic, strong) Reachability *reachability;
 @property (nonatomic) AKInternetStatus currentStatus;
@@ -61,7 +61,7 @@
 
 @end
 
-@implementation AKSystemInfo
+@implementation SystemInfo
 
 #pragma mark - // SETTERS AND GETTERS //
 
@@ -201,7 +201,7 @@
         [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeWarning methodType:AKMethodTypeSetup customCategories:nil message:[NSString stringWithFormat:@"%@ is nil", stringFromVariable(classForPrivateInfo)]];
     }
     
-    [[AKSystemInfo sharedInfo] setClassForPrivateInfo:classForPrivateInfo];
+    [[SystemInfo sharedInfo] setClassForPrivateInfo:classForPrivateInfo];
 }
 
 #pragma mark - // PUBLIC METHODS (General) //
@@ -328,27 +328,27 @@
 {
     [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategories:nil message:nil];
     
-    return [[AKSystemInfo sharedInfo] currentStatus];
+    return [[SystemInfo sharedInfo] currentStatus];
 }
 
 + (BOOL)isReachable
 {
     [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategories:nil message:nil];
     
-    return ([AKSystemInfo isReachableViaWiFi] || [AKSystemInfo isReachableViaWWAN]);
+    return ([SystemInfo isReachableViaWiFi] || [SystemInfo isReachableViaWWAN]);
 }
 
 + (BOOL)isReachableViaWiFi
 {
     [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategories:nil message:nil];
     
-    if (![AKSystemInfo wifiEnabled]) return NO;
+    if (![SystemInfo wifiEnabled]) return NO;
     
     int attempt = 0;
     BOOL isReachable;
     NSDate *startDate = [NSDate date];
     do {
-        isReachable = [[[AKSystemInfo sharedInfo] reachability] isReachableViaWiFi];
+        isReachable = [[[SystemInfo sharedInfo] reachability] isReachableViaWiFi];
     } while (!isReachable && (!INTERNET_MAX_ATTEMPTS_COUNT || (++attempt < INTERNET_MAX_ATTEMPTS_COUNT)) && (!INTERNET_MAX_ATTEMPTS_TIME || ([[NSDate date] timeIntervalSinceDate:startDate] < INTERNET_MAX_ATTEMPTS_TIME)));
     if (isReachable)
     {
@@ -365,13 +365,13 @@
 {
     [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategories:nil message:nil];
     
-    if (![AKSystemInfo wwanEnabled]) return NO;
+    if (![SystemInfo wwanEnabled]) return NO;
     
     int attempt = 0;
     BOOL isReachable;
     NSDate *startDate = [NSDate date];
     do {
-        isReachable = [[[AKSystemInfo sharedInfo] reachability] isReachableViaWWAN];
+        isReachable = [[[SystemInfo sharedInfo] reachability] isReachableViaWWAN];
     } while (!isReachable && (!INTERNET_MAX_ATTEMPTS_COUNT || (++attempt < INTERNET_MAX_ATTEMPTS_COUNT)) && (!INTERNET_MAX_ATTEMPTS_TIME || ([[NSDate date] timeIntervalSinceDate:startDate] < INTERNET_MAX_ATTEMPTS_TIME)));
     if (isReachable)
     {
@@ -388,11 +388,11 @@
 {
     [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategories:nil message:nil];
     
-    NSUserDefaults *userDefaults = [AKSystemInfo userDefaults];
+    NSUserDefaults *userDefaults = [SystemInfo userDefaults];
     NSNumber *wifiEnabled = [userDefaults objectForKey:USERDEFAULTS_KEY_WIFI_ENABLED];
     if (wifiEnabled) return wifiEnabled.boolValue;
     
-    [AKSystemInfo setWiFiEnabled:YES];
+    [SystemInfo setWiFiEnabled:YES];
     return YES;
 }
 
@@ -400,21 +400,21 @@
 {
     [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeSetter customCategories:nil message:nil];
     
-    NSUserDefaults *userDefaults = [AKSystemInfo userDefaults];
+    NSUserDefaults *userDefaults = [SystemInfo userDefaults];
     [userDefaults setBool:wifiEnabled forKey:USERDEFAULTS_KEY_WIFI_ENABLED];
     [userDefaults synchronize];
-    [AKSystemInfo updateInternetStatus];
+    [SystemInfo updateInternetStatus];
 }
 
 + (BOOL)wwanEnabled
 {
     [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategories:nil message:nil];
     
-    NSUserDefaults *userDefaults = [AKSystemInfo userDefaults];
+    NSUserDefaults *userDefaults = [SystemInfo userDefaults];
     NSNumber *wwanEnabled = [userDefaults objectForKey:USERDEFAULTS_KEY_WWAN_ENABLED];
     if (wwanEnabled) return wwanEnabled.boolValue;
     
-    [AKSystemInfo setWWANEnabled:YES];
+    [SystemInfo setWWANEnabled:YES];
     return YES;
 }
 
@@ -422,33 +422,33 @@
 {
     [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeSetter customCategories:nil message:nil];
     
-    NSUserDefaults *userDefaults = [AKSystemInfo userDefaults];
+    NSUserDefaults *userDefaults = [SystemInfo userDefaults];
     [userDefaults setBool:wwanEnabled forKey:USERDEFAULTS_KEY_WWAN_ENABLED];
     [userDefaults synchronize];
-    [AKSystemInfo updateInternetStatus];
+    [SystemInfo updateInternetStatus];
 }
 
 + (NSString *)publicIpAddress
 {
     [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategories:nil message:nil];
     
-    return [[AKSystemInfo sharedInfo] publicIpAddress];
+    return [[SystemInfo sharedInfo] publicIpAddress];
 }
 
 + (NSString *)privateIpAddress
 {
     [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategories:nil message:nil];
     
-    return [[AKSystemInfo sharedInfo] privateIpAddress];
+    return [[SystemInfo sharedInfo] privateIpAddress];
 }
 
 + (void)refreshInternetStatus
 {
     [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeUnspecified customCategories:nil message:nil];
     
-    [AKSystemInfo updateInternetStatus];
-    [AKSystemInfo fetchPublicIpAddress];
-    [AKSystemInfo fetchPrivateIpAddress];
+    [SystemInfo updateInternetStatus];
+    [SystemInfo fetchPublicIpAddress];
+    [SystemInfo fetchPrivateIpAddress];
 }
 
 #pragma mark - // CATEGORY METHODS (PRIVATE) //
@@ -457,10 +457,10 @@
 {
     [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategories:nil message:nil];
     
-    static AKSystemInfo *sharedInfo = nil;
+    static SystemInfo *sharedInfo = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        sharedInfo = [[AKSystemInfo alloc] init];
+        sharedInfo = [[SystemInfo alloc] init];
     });
     return sharedInfo;
 }
@@ -522,14 +522,14 @@
 {
     [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategories:nil message:nil];
     
-    return [[AKSystemInfo sharedInfo] reachability];
+    return [[SystemInfo sharedInfo] reachability];
 }
 
 + (NSUserDefaults *)userDefaults
 {
     [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategories:nil message:nil];
     
-    return [[AKSystemInfo sharedInfo] userDefaults];
+    return [[SystemInfo sharedInfo] userDefaults];
 }
 
 #pragma mark - // PRIVATE METHODS (Responders) //
@@ -538,7 +538,7 @@
 {
     [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeUnspecified customCategories:@[AKD_NOTIFICATION_CENTER] message:nil];
     
-    [AKSystemInfo refreshInternetStatus];
+    [SystemInfo refreshInternetStatus];
 }
 
 #pragma mark - // PRIVATE METHODS (Helper) //
@@ -547,19 +547,19 @@
 {
     [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeUnspecified customCategories:@[AKD_NOTIFICATION_CENTER] message:nil];
     
-    if ([AKSystemInfo isReachableViaWiFi]) [[AKSystemInfo sharedInfo] setCurrentStatus:AKConnectedViaWiFi];
-    else if ([AKSystemInfo isReachableViaWWAN]) [[AKSystemInfo sharedInfo] setCurrentStatus:AKConnectedViaWWAN];
-    else [[AKSystemInfo sharedInfo] setCurrentStatus:AKDisconnected];
+    if ([SystemInfo isReachableViaWiFi]) [[SystemInfo sharedInfo] setCurrentStatus:AKConnectedViaWiFi];
+    else if ([SystemInfo isReachableViaWWAN]) [[SystemInfo sharedInfo] setCurrentStatus:AKConnectedViaWWAN];
+    else [[SystemInfo sharedInfo] setCurrentStatus:AKDisconnected];
 }
 
 + (void)fetchPublicIpAddress
 {
     [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategories:nil message:nil];
     
-    if (![AKSystemInfo isReachable]) return;
+    if (![SystemInfo isReachable]) return;
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:PUBLIC_IPADDRESS_URL]];
-    NSURLConnection *connection = [[NSURLConnection alloc] initWithRequest:request delegate:[AKSystemInfo sharedInfo]];
+    NSURLConnection *connection = [[NSURLConnection alloc] initWithRequest:request delegate:[SystemInfo sharedInfo]];
     [connection start];
 }
 
@@ -567,7 +567,7 @@
 {
     [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategories:nil message:nil];
     
-    if (![AKSystemInfo isReachable]) return;
+    if (![SystemInfo isReachable]) return;
     
     NSString *ipAddress = @"error";
     struct ifaddrs *interfaces = NULL;
@@ -595,7 +595,7 @@
     }
     // Free memory
     freeifaddrs(interfaces);
-    [[AKSystemInfo sharedInfo] setPrivateIpAddress:ipAddress];
+    [[SystemInfo sharedInfo] setPrivateIpAddress:ipAddress];
 }
 
 @end

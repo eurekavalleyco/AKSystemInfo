@@ -1,5 +1,5 @@
 //
-//  AKSystemInfo+PRIVATE.h
+//  SystemInfo+PRIVATE.h
 //  Sandbox
 //
 //  Created by Ken M. Haggerty on 9/25/15.
@@ -10,12 +10,12 @@
 
 #pragma mark - // IMPORTS (Public) //
 
-#import "AKSystemInfo.h"
+#import "SystemInfo.h"
 
 #pragma mark - // PROTOCOLS //
 
 #pragma mark - // DEFINITIONS (Public) //
 
-@interface AKSystemInfo (PRIVATE)
+@interface SystemInfo (PRIVATE)
 + (id)sharedInfo;
 @end

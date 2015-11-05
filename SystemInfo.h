@@ -1,6 +1,6 @@
 //
-//  AKSystemInfo.h
-//  AKSystemInfo
+//  SystemInfo.h
+//  SystemInfo
 //
 //  Created by Ken M. Haggerty on 11/11/13.
 //  Copyright (c) 2013 Eureka Valley Co. All rights reserved.
@@ -31,7 +31,7 @@ typedef enum {
 #define NOTIFICATION_PUBLIC_IPADDRESS_DID_CHANGE @"kNotificationPublicIPAddressDidChange"
 #define NOTIFICATION_PRIVATE_IPADDRESS_DID_CHANGE @"kNotificationPrivateIPAddressDidChange"
 
-@interface AKSystemInfo : NSObject
+@interface SystemInfo : NSObject
 
 // SETUP //
 
