@@ -27,6 +27,7 @@ typedef enum {
     AKConnectedViaWiFi = 2
 } AKInternetStatus;
 
+#define NOTIFICATION_DEVICE_ORIENTATION_DID_CHANGE @"kNotificationDeviceOrientationDidChange"
 #define NOTIFICATION_INTERNETSTATUS_DID_CHANGE @"kNotificationInternetStatusDidChange"
 #define NOTIFICATION_PUBLIC_IPADDRESS_DID_CHANGE @"kNotificationPublicIPAddressDidChange"
 #define NOTIFICATION_PRIVATE_IPADDRESS_DID_CHANGE @"kNotificationPrivateIPAddressDidChange"

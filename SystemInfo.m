@@ -32,6 +32,7 @@
 
 @interface SystemInfo () <NSURLConnectionDelegate, NSURLConnectionDataDelegate>
 @property (nonatomic) Class classForPrivateInfo;
+@property (nonatomic) UIDeviceOrientation deviceOrientation;
 @property (nonatomic, strong) Reachability *reachability;
 @property (nonatomic) AKInternetStatus currentStatus;
 @property (nonatomic, strong) NSString *publicIpAddress;
@@ -51,6 +52,7 @@
 
 // RESPONDERS //
 
+- (void)deviceOrientationDidChange:(NSNotification *)notification;
 - (void)internetStatusDidChange:(NSNotification *)notification;
 
 // HELPER //
@@ -66,6 +68,7 @@
 #pragma mark - // SETTERS AND GETTERS //
 
 @synthesize classForPrivateInfo = _classForPrivateInfo;
+@synthesize deviceOrientation = _deviceOrientation;
 @synthesize reachability = _reachability;
 @synthesize currentStatus = _currentStatus;
 @synthesize publicIpAddress = _publicIpAddress;
@@ -79,6 +82,17 @@
     
     _classForPrivateInfo = classForPrivateInfo;
     [self setReachability:[Reachability reachabilityWithHostname:[classForPrivateInfo reachabilityDomain]]];
+}
+
+- (void)setDeviceOrientation:(UIDeviceOrientation)deviceOrientation
+{
+    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeSetter customCategories:nil message:nil];
+    
+    if (deviceOrientation == _deviceOrientation) return;
+    
+    _deviceOrientation = deviceOrientation;
+    
+    [AKGenerics postNotificationName:NOTIFICATION_DEVICE_ORIENTATION_DID_CHANGE object:nil userInfo:[NSDictionary dictionaryWithObject:[NSNumber numberWithInt:deviceOrientation] forKey:NOTIFICATION_OBJECT_KEY]];
 }
 
 - (void)setReachability:(Reachability *)reachability
@@ -226,18 +240,14 @@
 {
     [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategories:@[AKD_UI] message:nil];
     
-    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
-    if ((orientation == UIDeviceOrientationPortrait) || (orientation == UIDeviceOrientationPortraitUpsideDown)) return YES;
-    else return NO;
+    return UIDeviceOrientationIsPortrait([[SystemInfo sharedInfo] deviceOrientation]);
 }
 
 + (BOOL)isLandscape
 {
     [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategories:@[AKD_UI] message:nil];
     
-    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
-    if ((orientation == UIDeviceOrientationLandscapeLeft) || (orientation == UIDeviceOrientationLandscapeRight)) return YES;
-    else return NO;
+    return UIDeviceOrientationIsLandscape([[SystemInfo sharedInfo] deviceOrientation]);
 }
 
 + (BOOL)isRetina
@@ -451,20 +461,6 @@
     [SystemInfo fetchPrivateIpAddress];
 }
 
-#pragma mark - // CATEGORY METHODS (PRIVATE) //
-
-+ (id)sharedInfo
-{
-    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategories:nil message:nil];
-    
-    static SystemInfo *sharedInfo = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        sharedInfo = [[SystemInfo alloc] init];
-    });
-    return sharedInfo;
-}
-
 #pragma mark - // DELEGATED METHODS (NSURLConnectionDelegate) //
 
 #pragma mark - // DELEGATED METHODS (NSURLConnectionDataDelegate) //
@@ -500,9 +496,24 @@
 
 #pragma mark - // PRIVATE METHODS (General) //
 
++ (id)sharedInfo
+{
+    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter customCategories:nil message:nil];
+    
+    static SystemInfo *sharedInfo = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        sharedInfo = [[SystemInfo alloc] init];
+    });
+    return sharedInfo;
+}
+
 - (void)setup
 {
     [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeSetup customCategories:nil message:nil];
+    
+    [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceOrientationDidChange:) name:UIDeviceOrientationDidChangeNotification object:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(internetStatusDidChange:) name:kReachabilityChangedNotification object:self.reachability];
     if ([self respondsToSelector:@selector(addObserversForAssetsLibraryCategory)]) [self performSelector:@selector(addObserversForAssetsLibraryCategory)];
@@ -511,6 +522,9 @@
 - (void)teardown
 {
     [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeSetup customCategories:nil message:nil];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
+    [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kReachabilityChangedNotification object:self.reachability];
     if ([self respondsToSelector:@selector(removeObserversForAssetsLibraryCategory)]) [self performSelector:@selector(removeObserversForAssetsLibraryCategory)];
@@ -533,6 +547,13 @@
 }
 
 #pragma mark - // PRIVATE METHODS (Responders) //
+
+- (void)deviceOrientationDidChange:(NSNotification *)notification
+{
+    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeUnspecified customCategories:@[AKD_NOTIFICATION_CENTER] message:nil];
+    
+    [self setDeviceOrientation:[[UIDevice currentDevice] orientation]];
+}
 
 - (void)internetStatusDidChange:(NSNotification *)notification
 {
