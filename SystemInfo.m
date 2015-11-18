@@ -179,11 +179,6 @@
     [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeSetup tags:nil message:nil];
     
     self = [super init];
-    if (!self)
-    {
-        [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeCritical methodType:AKMethodTypeSetup tags:nil message:[NSString stringWithFormat:@"Could not initialize %@", stringFromVariable(self)]];
-        return nil;
-    }
     
     [self setup];
     return self;
