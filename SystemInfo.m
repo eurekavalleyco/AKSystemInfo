@@ -253,6 +253,15 @@
     else return NO;
 }
 
++ (BOOL)forceTouchEnabledForViewController:(UIViewController *)viewController
+{
+    [AKDebugger logMethod:METHOD_NAME logType:AKLogTypeMethodName methodType:AKMethodTypeGetter tags:@[AKD_UI] message:nil];
+    
+    if (![viewController.traitCollection respondsToSelector:@selector(forceTouchCapability)]) return NO;
+    
+    return (viewController.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable);
+}
+
 #pragma mark - // PUBLIC METHODS (Software) //
 
 + (NSString *)bundleIdentifier

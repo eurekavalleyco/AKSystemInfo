@@ -48,6 +48,7 @@ typedef enum {
 + (BOOL)isPortrait;
 + (BOOL)isLandscape;
 + (BOOL)isRetina;
++ (BOOL)forceTouchEnabledForViewController:(UIViewController *)viewController;
 
 // SOFTWARE //
 
