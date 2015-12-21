@@ -17,6 +17,12 @@
 #include <ifaddrs.h>
 #include <arpa/inet.h>
 
+@protocol AssetsLibraryProtocol <NSObject>
+@optional
+- (void)addObserversForAssetsLibraryCategory;
+- (void)removeObserversForAssetsLibraryCategory;
+@end
+
 #pragma mark - // DEFINITIONS (Private) //
 
 #define SEGUE_DURATION 0.18
@@ -30,7 +36,7 @@
 #define INTERNET_MAX_ATTEMPTS_COUNT 2
 #define INTERNET_MAX_ATTEMPTS_TIME 1.0f
 
-@interface SystemInfo () <NSURLConnectionDelegate, NSURLConnectionDataDelegate>
+@interface SystemInfo () <NSURLConnectionDelegate, NSURLConnectionDataDelegate, AssetsLibraryProtocol>
 @property (nonatomic) Class classForPrivateInfo;
 @property (nonatomic) UIDeviceOrientation deviceOrientation;
 @property (nonatomic, strong) Reachability *reachability;
