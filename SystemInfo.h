@@ -16,21 +16,15 @@
 #pragma mark - // PROTOCOLS //
 
 @protocol PrivateInfo <NSObject>
+@end
+
+@protocol PrivateInfo_Reachability <NSObject>
 + (NSString *)reachabilityDomain;
 @end
 
 #pragma mark - // DEFINITIONS (Public) //
 
-typedef enum {
-    AKDisconnected = 0,
-    AKConnectedViaWWAN = 1,
-    AKConnectedViaWiFi = 2
-} AKInternetStatus;
-
 #define NOTIFICATION_DEVICE_ORIENTATION_DID_CHANGE @"kNotificationDeviceOrientationDidChange"
-#define NOTIFICATION_INTERNETSTATUS_DID_CHANGE @"kNotificationInternetStatusDidChange"
-#define NOTIFICATION_PUBLIC_IPADDRESS_DID_CHANGE @"kNotificationPublicIPAddressDidChange"
-#define NOTIFICATION_PRIVATE_IPADDRESS_DID_CHANGE @"kNotificationPrivateIPAddressDidChange"
 
 @interface SystemInfo : NSObject
 
@@ -63,18 +57,9 @@ typedef enum {
 + (UIColor *)iOSBlue;
 + (BOOL)viewIsUsingAutoLayout:(UIView *)view;
 
-// INTERNET //
+@end
 
-+ (AKInternetStatus)internetStatus;
-+ (BOOL)isReachable;
-+ (BOOL)isReachableViaWiFi;
-+ (BOOL)isReachableViaWWAN;
-+ (BOOL)wifiEnabled;
-+ (void)setWiFiEnabled:(BOOL)wifiEnabled;
-+ (BOOL)wwanEnabled;
-+ (void)setWWANEnabled:(BOOL)wwanEnabled;
-+ (NSString *)publicIpAddress;
-+ (NSString *)privateIpAddress;
-+ (void)refreshInternetStatus;
-
+@interface SystemInfo (PRIVATE)
++ (id)sharedInfo;
++ (Class)privateInfo;
 @end
